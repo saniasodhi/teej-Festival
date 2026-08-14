@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Teeyan — Punjab's Monsoon Festival</title>
+<meta name="description" content="The peengh, the boliyan, the month of Sawan. A scrolling record of Teeyan, the Punjabi women's festival, with the folk music that belongs to each moment.">
+<meta name="theme-color" content="#0C272C">
+<meta name="color-scheme" content="dark">
+
+<!-- Relative paths throughout: this has to work from https://user.github.io/repo-name/ -->
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<!-- og:image is relative so it can never 404 before you know your URL. Most
+     crawlers resolve it; a few older ones want a full URL. Once the site has a
+     home, change both image tags below to the absolute address, e.g.
+     https://user.github.io/repo-name/assets/og-image.jpg -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Teeyan — Punjab's Monsoon Festival">
+<meta property="og:description" content="The peengh, the boliyan, the month of Sawan. A scrolling record of Teeyan, the Punjabi women's festival, with the folk music that belongs to each moment.">
+<meta property="og:image" content="assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The word Teeyan in Gurmukhi, gold on a dusk-red ground.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Teeyan — Punjab's Monsoon Festival">
+<meta name="twitter:description" content="The peengh, the boliyan, the month of Sawan. A scrolling record of Teeyan, the Punjabi women's festival.">
+<meta name="twitter:image" content="assets/og-image.jpg">
+
+<link rel="preload" href="assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/karla-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/noto-serif-gurmukhi-var.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- The first thing anyone sees after the card. Only Sawan is preloaded; the
+     other four load as they come within a viewport. The media queries match
+     the <picture> in js/render.js, and type="image/webp" means a browser that
+     cannot decode WebP skips the preload rather than wasting the request. -->
+<link rel="preload" href="assets/art/sawan-wide.webp" as="image" type="image/webp" media="(orientation: landscape)">
+<link rel="preload" href="assets/art/sawan-tall.webp" as="image" type="image/webp" media="(orientation: portrait)">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/atmosphere.css">
+<link rel="stylesheet" href="css/chapters.css">
+<link rel="stylesheet" href="css/player.css">
+<link rel="stylesheet" href="css/title-card.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body class="is-locked">
+
+<!-- The five backgrounds. Fixed and stacked, cross-faded by scroll position,
+     so no section ever cuts to the next. Built by js/render.js. -->
+<div class="backdrop" id="backdrop" aria-hidden="true">
+  <div class="backdrop__tint backdrop__tint--cool" id="tint-cool"></div>
+  <div class="backdrop__tint backdrop__tint--warm" id="tint-warm"></div>
+  <div class="backdrop__grain"></div>
+  <div class="backdrop__vignette"></div>
+</div>
+
+<main class="journey" id="journey">
+  <h1 class="u-visually-hidden">Teeyan — Punjab's monsoon festival</h1>
+  <!-- Sections are built by js/render.js from js/sections.js -->
+</main>
+
+<!-- Entry overlay. Dark, quiet, slow. -->
+<div class="title-card" id="title-card">
+
+  <!-- Decorative footage of the courtyard, graded well down so the card keeps
+       its register. Muted and silent — the "do not autoplay" rule is about the
+       music, and nothing here makes a sound. The poster carries the frame
+       until the video can play, and stands in for it entirely under
+       prefers-reduced-motion or if the file never loads. -->
+  <div class="title-card__film" id="title-film" aria-hidden="true">
+    <!-- autoplay is on the element as well as being called from JS: muted
+         autoplay is permitted everywhere, and this way the footage still runs
+         if the module never executes. preload="auto" because it is 2.6MB and
+         it is the first thing on screen. -->
+    <video id="title-video"
+           poster="assets/video/teeyan-title-poster.jpg"
+           autoplay muted loop playsinline preload="auto"
+           disablepictureinpicture tabindex="-1">
+      <source src="assets/video/teeyan-title.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="title-card__inner">
+
+    <p class="title-card__wordmark">
+      <svg class="wordmark" viewBox="0 0 2164 1040" role="img" aria-label="Teeyan" focusable="false">
+        <!-- "Teeyan" in Gurmukhi, converted to outlines from Noto Serif Gurmukhi
+             and shaped with HarfBuzz. Never replace this with live text. -->
+        <path fill="currentColor" d="M760.2 417.5 753.2 431.5H621.2Q623.2 439.5 624.2 447Q625.2 454.5 625.2 463.5Q625.2 515.5 603.7 560.5Q582.2 605.5 538.2 629.5Q592.2 660.5 621.7 704Q651.2 747.5 651.2 803.5Q651.2 860.5 619.7 904.5Q588.2 948.5 534.2 973.5Q480.2 998.5 412.2 998.5Q358.2 998.5 309.7 983.5Q261.2 968.5 224.2 944.5Q187.2 920.5 165.7 892.5Q144.2 864.5 144.2 838.5Q144.2 820.5 153.2 805.5Q201.2 848.5 259.7 872.5Q318.2 896.5 380.2 896.5Q461.2 896.5 505.2 861Q549.2 825.5 549.2 775.5Q549.2 744.5 531.2 718Q513.2 691.5 479.2 676.5Q446.2 692.5 404.7 701.5Q363.2 710.5 327.2 710.5Q293.2 710.5 265.2 701.5Q237.2 692.5 219.7 675.5Q202.2 658.5 202.2 633.5Q202.2 598.5 235.7 581.5Q269.2 564.5 318.2 564.5Q356.2 564.5 396.7 573Q437.2 581.5 468.2 596.5Q488.2 579.5 501.2 550.5Q514.2 521.5 514.2 486.5Q514.2 472.5 512.2 458.5Q510.2 444.5 506.2 431.5H108.2L80.2 355.5L86.2 342.5H731.2ZM1030.2 417.5 1023.2 431.5H902.2V994.5L889.2 1001.5L790.2 952.5V431.5H686.2L657.2 355.5L664.2 342.5H790.2Q789.2 299.5 783.2 264Q777.2 228.5 765.2 202.5Q751.2 171.5 726.7 154.5Q702.2 137.5 670.2 137.5Q628.2 137.5 602.2 164.5Q576.2 191.5 576.2 235.5Q576.2 249.5 580.7 267Q585.2 284.5 592.2 300.5L584.2 311.5H554.2Q523.2 289.5 503.7 256Q484.2 222.5 484.2 184.5Q484.2 144.5 505.2 111.5Q526.2 78.5 563.7 58.5Q601.2 38.5 650.2 38.5Q704.2 38.5 749.2 64Q794.2 89.5 827.2 136.5Q856.2 178.5 873.2 230.5Q890.2 282.5 895.2 342.5H1002.2ZM1825.2 417.5 1819.2 431.5H1703.2V994.5L1690.2 1001.5L1590.2 952.5V633.5Q1568.2 647.5 1543.7 665.5Q1519.2 683.5 1496.7 702.5Q1474.2 721.5 1455.2 740.5Q1448.2 773.5 1434.7 806Q1421.2 838.5 1403.2 865Q1385.2 891.5 1363.2 907.5Q1341.2 923.5 1319.2 923.5Q1291.2 923.5 1275.2 904.5Q1259.2 885.5 1259.2 857.5Q1259.2 833.5 1272.2 804Q1285.2 774.5 1307.2 744.5Q1329.2 714.5 1356.2 688.5Q1363.2 646.5 1361.7 596.5Q1360.2 546.5 1350.2 502.5Q1312.2 529.5 1276.2 562.5Q1240.2 595.5 1210.2 628.5Q1206.2 662.5 1193.2 693.5Q1180.2 724.5 1162.7 749Q1145.2 773.5 1125.7 788Q1106.2 802.5 1086.2 802.5Q1061.2 802.5 1042.7 786Q1024.2 769.5 1024.2 737.5Q1024.2 715.5 1035.7 688.5Q1047.2 661.5 1069.7 631.5Q1092.2 601.5 1123.2 570.5Q1123.2 538.5 1115.7 501Q1108.2 463.5 1097.2 431.5H982.2L953.2 355.5L960.2 342.5H1132.2Q1144.2 364.5 1156.2 393.5Q1168.2 422.5 1179.2 453Q1190.2 483.5 1197.2 510.5Q1224.2 487.5 1253.7 463Q1283.2 438.5 1312.2 417.5Q1341.2 396.5 1365.2 380.5H1373.2Q1389.2 410.5 1404.2 452.5Q1419.2 494.5 1430.7 539.5Q1442.2 584.5 1448.2 626.5Q1468.2 609.5 1491.7 591Q1515.2 572.5 1541.2 554.5Q1567.2 536.5 1590.2 522.5V342.5H1796.2ZM2084.2 417.5 2077.2 431.5H1962.2V805.5L1948.2 811.5L1849.2 762.5V431.5H1769.2L1741.2 355.5L1747.2 342.5H2055.2ZM1836.2 203.5Q1836.2 176.5 1855.7 157.5Q1875.2 138.5 1904.2 138.5Q1934.2 138.5 1953.7 157.5Q1973.2 176.5 1973.2 206.5Q1973.2 234.5 1954.7 254Q1936.2 273.5 1906.2 273.5Q1875.2 273.5 1855.7 254Q1836.2 234.5 1836.2 203.5Z"/>
+      </svg>
+      <span class="u-visually-hidden">Teeyan</span>
+    </p>
+
+    <p class="title-card__roman" aria-hidden="true">TEEYAN</p>
+
+    <p class="title-card__tagline">The peengh, the boliyan, the month of Sawan</p>
+
+    <p class="title-card__context">
+      A women's festival held through Sawan, the monsoon month, when married
+      daughters return to the villages they grew up in.
+    </p>
+
+    <button class="title-card__enter" id="enter" type="button">
+      <span class="title-card__enter-label">Enter Sawan</span>
+    </button>
+
+    <!-- A real control, not a caption. Browsers will not start audio without
+         a press, so rather than pretend otherwise this asks for the press and
+         says what it does. It starts Sawan's music, which then carries
+         straight through the entry. -->
+    <p class="title-card__sound">
+      <button class="title-card__sound-btn" id="sound" type="button" aria-pressed="false">
+        <span class="title-card__sound-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 16" focusable="false">
+            <path d="M3.4 6.1h2.1L8.3 3.6v8.8L5.5 9.9H3.4z"/>
+            <path class="title-card__wave" d="M10.6 5.9a3 3 0 0 1 0 4.2M12.6 4.2a5.6 5.6 0 0 1 0 7.6"
+                  fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="title-card__sound-label">Play the music</span>
+      </button>
+    </p>
+
+    <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
+      <span class="scroll-cue__word">scroll</span>
+      <span class="scroll-cue__line"></span>
+    </div>
+
+  </div>
+</div>
+
+<noscript>
+  <style>
+    .title-card { position: static; opacity: 1; }
+    .backdrop { display: none; }
+    body { overflow: auto; background: #0C272C; }
+  </style>
+  <p class="noscript-note">
+    Teeyan is a scrolling record of the Punjabi monsoon festival, with folk
+    music embedded for each part of it. It needs JavaScript to run.
+  </p>
+</noscript>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

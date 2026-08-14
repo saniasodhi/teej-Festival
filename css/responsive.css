@@ -1,0 +1,285 @@
+/* ============================================================================
+   responsive — 1440 / 1024 / 768 / 430 / 375
+
+   Desktop keeps the wide illustration and a six-column type block. Tablet
+   holds the same composition at a smaller scale. Mobile abandons the
+   left/right anchoring entirely: the tall artwork crop has one clear zone,
+   which is the bottom, so everything goes there in a single column.
+   ========================================================================= */
+
+/* -------------------------------------------------------- large desktop -- */
+
+@media (min-width: 1441px) {
+  :root {
+    --gutter: clamp(4rem, 7vw, 9rem);
+    --measure: 30rem;
+  }
+
+  /* More air around the same lockup, rather than a bigger one. */
+  .chapter[data-anchor='centre'] .chapter__block { grid-column: 4 / span 6; }
+}
+
+/* -------------------------------------------------------------- tablet -- */
+
+@media (max-width: 1024px) {
+  :root {
+    --gutter: clamp(2rem, 5vw, 3.5rem);
+    --measure: 25rem;
+  }
+
+  /* Seven, not eight — the copy stays nearer the edge the scrim leans on. */
+  .chapter[data-anchor='left']   .chapter__block { grid-column: 1 / span 7; }
+  .chapter[data-anchor='right']  .chapter__block { grid-column: 6 / span 7; }
+  .chapter[data-anchor='centre'] .chapter__block { grid-column: 2 / span 10; }
+
+  .chapter__gurmukhi { font-size: clamp(2.4rem, 5.9vw, 3.8rem); }
+
+  .player { width: min(100%, 38rem); }
+  .player__pill { padding-right: 1.25rem; }
+}
+
+/* -------------------------------------------------------------- mobile -- */
+
+@media (max-width: 768px) {
+  :root {
+    --gutter: 1.4rem;
+    --rail: 1.15rem;
+    /* Full width on a phone, but capped so a 768px portrait tablet does not
+       end up with 110-character lines. */
+    --measure: min(100%, 30rem);
+  }
+
+  .chapter { min-height: 100dvh; }
+
+  .chapter__frame {
+    grid-template-columns: 1fr;
+    align-items: end;
+    padding-bottom: calc(2.25rem + var(--safe-b));
+  }
+
+  /* The tall crop has one clear zone. Everything sits in it. */
+  .chapter[data-anchor='left']   .chapter__block,
+  .chapter[data-anchor='right']  .chapter__block,
+  .chapter[data-anchor='centre'] .chapter__block {
+    grid-column: 1;
+    justify-self: stretch;
+    max-width: none;
+    text-align: left;
+  }
+
+  .chapter[data-anchor='centre'] .chapter__rule,
+  .chapter[data-anchor='centre'] .chapter__copy,
+  .chapter[data-anchor='centre'] .chapter__colophon-inner,
+  .chapter[data-anchor='centre'] .chapter__disclosure { margin-inline: 0; }
+
+  .chapter[data-anchor='centre'] .player { margin-inline: 0; }
+
+  /* One clear zone in a vertical frame, so the scrim is purely bottom-weighted
+     whatever the section's desktop anchor was.
+
+     Measured in pixels from the bottom, not in percentages. The block is about
+     the same height on every phone; the viewport is not. On a 667px-tall
+     screen a percentage scrim leaves the eyebrow sitting above its strong zone
+     and on bare sky — which is exactly what it did before this was changed. */
+  .chapter[data-anchor='left'],
+  .chapter[data-anchor='right'],
+  .chapter[data-anchor='centre'] {
+    --scrim: linear-gradient(to top,
+      rgba(6, 4, 5, 0.93) 0,
+      rgba(6, 4, 5, 0.9) 240px,
+      rgba(6, 4, 5, 0.78) 380px,
+      rgba(6, 4, 5, 0.55) 480px,
+      rgba(6, 4, 5, 0.22) 580px,
+      rgba(6, 4, 5, 0) 690px);
+  }
+
+  /* The vertical scrim already ends on zero at the top, so the mask only has
+     to protect the bottom edge. */
+  .chapter__frame::before {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
+  }
+
+  .chapter__lede::before { inset: -2.25rem -1.6rem -1.75rem -1.6rem; }
+
+  /* A short phone stacks the same lockup into less height, so the eyebrow ends
+     up further from the bottom and out of the scrim's reach. Measured: on a
+     375x667 frame it lands on the bright sky above the gurdwara. */
+  @media (max-height: 720px) {
+    .chapter[data-anchor='left'],
+    .chapter[data-anchor='right'],
+    .chapter[data-anchor='centre'] {
+      --scrim: linear-gradient(to top,
+        rgba(6, 4, 5, 0.94) 0,
+        rgba(6, 4, 5, 0.92) 260px,
+        rgba(6, 4, 5, 0.82) 400px,
+        rgba(6, 4, 5, 0.62) 490px,
+        rgba(6, 4, 5, 0.26) 590px,
+        rgba(6, 4, 5, 0) 700px);
+    }
+  }
+
+  .chapter__gurmukhi { font-size: clamp(2.2rem, 9.8vw, 3.1rem); }
+  .chapter__copy { font-size: 1rem; line-height: 1.55; }
+  .chapter__rule { margin: 1.15rem 0 1.05rem; }
+  .chapter__detail-body { font-size: 0.92rem; }
+
+  /* ------------------------------------------------------ compact player -- */
+
+  .player { width: 100%; margin-top: 1.5rem; }
+
+  .player__pill {
+    min-height: 0;
+    gap: 0 0.7rem;
+    padding: 0.75rem 0.9rem 0.8rem 0.75rem;
+    border-radius: 1.9rem;
+  }
+
+  .player__mount { border-radius: 1.9rem; }
+
+  .player__thumb { width: 2.75rem; height: 2.75rem; }
+  .player__track-title { font-size: 0.86rem; }
+  .player__sub { font-size: 0.68rem; }
+
+  /* The label goes, the arrow stays — still a 44px target. */
+  .player__out-label { display: none; }
+  .player__out {
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    margin: -0.7rem -0.7rem 0 0;
+  }
+  .player__out svg { width: 12px; height: 12px; }
+
+  /* 44px stays 44px on touch. Everything else in the pill gives way first. */
+  .player__transport { gap: 0; }
+  .player__btn { width: 44px; height: 44px; }
+  .player__btn--play { width: 48px; height: 48px; }
+
+  .player__time { min-width: 1.9rem; font-size: 0.64rem; }
+  .player__scrub { gap: 0.5rem; }
+
+  /* A 44px seek bar would be half the height of the whole pill, so this one
+     stops at 32 — comfortably past the 24px floor, with the transport buttons
+     beside it holding the full 44. */
+  .player__bar { height: 32px; }
+
+  .player__note { font-size: 0.76rem; }
+
+  /* ---------------------------------------------------------- title card -- */
+
+  .title-card__roman { letter-spacing: 0.42em; text-indent: 0.42em; margin-bottom: 1.9rem; }
+  .title-card__wordmark { margin-bottom: 1.3rem; }
+  .title-card__enter { margin-top: 2.1rem; }
+  .scroll-cue { bottom: -3.25rem; }
+  .scroll-cue__line { height: 2.25rem; }
+}
+
+/* ------------------------------------------------------------- phone -- */
+
+@media (max-width: 430px) {
+  :root { --gutter: 1.15rem; }
+
+  .chapter__block::before,
+
+  .chapter__sub { letter-spacing: 0.2em; }
+
+  .player__pill { padding: 0.7rem 0.75rem 0.75rem 0.7rem; }
+  .player__thumb { width: 2.5rem; height: 2.5rem; }
+  .player__btn svg { width: 15px; height: 15px; }
+
+  .wordmark { width: min(72vw, 15rem); }
+  .title-card__tagline { font-size: 1.02rem; }
+  .title-card__context { font-size: 0.83rem; }
+}
+
+/* Below 400px there is no longer room for the thumbnail and three 44px
+   controls and a legible track title. The thumbnail is the one of the three
+   that carries no function, so it goes. */
+@media (max-width: 399px) {
+  .player__thumb { display: none; }
+  .player__pill { padding-left: 1rem; gap: 0 0.5rem; }
+  .player__time { min-width: 1.75rem; }
+}
+
+@media (max-width: 375px) {
+  .chapter__gurmukhi { font-size: 2.05rem; }
+  .chapter__copy { font-size: 0.95rem; }
+}
+
+/* --------------------------------------------------- short landscape -- */
+
+/* A phone turned sideways has about 375px of height for a lockup that wants
+   more. The answer is to spend the width instead: one full-bleed column, a
+   long measure so the copy runs to three lines rather than five, and every
+   vertical gap cut to what it needs. Touch targets do not move — they are the
+   one thing that cannot give. */
+@media (max-height: 560px) and (orientation: landscape) and (max-width: 1024px) {
+  :root { --measure: min(100%, 44rem); }
+
+  /* The block goes full width here, so a side-weighted scrim would leave the
+     end of every line sitting on bare artwork. Bottom-weighted instead, in
+     pixels, sized to the ~300px the lockup occupies. */
+  .chapter[data-anchor='left'],
+  .chapter[data-anchor='right'],
+  .chapter[data-anchor='centre'] {
+    --scrim: linear-gradient(to top,
+      rgba(6, 4, 5, 0.94) 0,
+      rgba(6, 4, 5, 0.9) 150px,
+      rgba(6, 4, 5, 0.8) 230px,
+      rgba(6, 4, 5, 0.62) 300px,
+      rgba(6, 4, 5, 0.3) 350px,
+      rgba(6, 4, 5, 0) 410px);
+  }
+
+  .chapter__frame::before {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 96%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 96%, transparent 100%);
+  }
+
+  .chapter[data-anchor='left']   .chapter__block,
+  .chapter[data-anchor='right']  .chapter__block,
+  .chapter[data-anchor='centre'] .chapter__block {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    max-width: none;
+  }
+
+  .chapter__frame {
+    padding-top: calc(0.9rem + var(--safe-t));
+    padding-bottom: calc(0.9rem + var(--safe-b));
+  }
+
+  .chapter__name { gap: 0.4rem; }
+  .chapter__gurmukhi { font-size: clamp(1.7rem, 4.6vw, 2.2rem); line-height: 1.16; }
+  .chapter__sub { font-size: 0.62rem; }
+  .chapter__rule { height: 7px; margin: 0.55rem 0 0.5rem; }
+  .chapter__copy { font-size: 0.88rem; line-height: 1.42; }
+  .chapter__disclosure { margin-top: 0.35rem; }
+  .chapter__colophon { padding-top: clamp(2.5rem, 8vh, 4rem); }
+  .chapter__colophon-inner { padding-top: 0.8rem; font-size: 0.7rem; }
+
+  .player { margin-top: 0.6rem; }
+  .player__pill { min-height: 0; padding: 0.5rem 0.9rem 0.5rem 0.6rem; }
+  .player__thumb { width: 2.25rem; height: 2.25rem; }
+
+  .title-card__context { display: none; }
+  .title-card__wordmark { margin-bottom: 0.9rem; }
+  .title-card__roman { margin-bottom: 1.1rem; }
+  .title-card__enter { margin-top: 1.3rem; }
+  .title-card__sound { margin-top: 0.6rem; }
+  .wordmark { width: min(34vw, 13rem); }
+  .scroll-cue { display: none; }
+}
+
+/* ----------------------------------------------- no backdrop-filter -- */
+
+/* Firefox before 103 and a few older mobile engines. Without this the pill
+   would sit on artwork with no contrast behind the type. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .player__pill {
+    background: linear-gradient(148deg,
+      rgba(38, 25, 19, 0.93) 0%,
+      rgba(12, 8, 7, 0.95) 100%);
+  }
+}

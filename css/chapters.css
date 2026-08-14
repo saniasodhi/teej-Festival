@@ -1,0 +1,324 @@
+/* ============================================================================
+   chapters — the five places, and how words sit in them
+
+   The signature here is the scrim. It is not a black box behind the type: it
+   is a darning field, the slanted counted-thread float a phulkari is built
+   from, laid down at low strength and fading out from the anchor edge. It
+   does the scrim's actual job — holding contrast over busy artwork — in the
+   material of the subject. Its colour is the section accent, so the cloth
+   warms as the journey does.
+   ========================================================================= */
+
+.journey {
+  position: relative;
+  z-index: 1;
+}
+
+/* Each place is given two viewports of scroll, not one. The first is a hold —
+   the artwork sits still and can be looked at — and the second is the dissolve
+   into the next place. At one viewport each, the paintings went past before
+   anyone could see them. */
+.chapter {
+  position: relative;
+  display: grid;
+  /* Two viewports of scroll for the frame to stick inside, then a row for the
+     colophon on the last section. The stage row has to be explicitly two
+     viewports tall: a sticky element can only travel inside its own grid area,
+     so an auto row — which is just the frame's own height — pins nothing, and
+     anything after it slides up over the frame while it is still on screen. */
+  grid-template-rows: 200vh auto;
+  grid-template-rows: 200dvh auto;
+}
+
+/* Sticks for the length of the hold, so the words stay put while the section
+   scrolls under them, then releases into the dissolve. Also a full viewport of
+   its own, so anything after it — the colophon — adds to the section's height
+   instead of lifting the lockup off the ground.
+
+   The horizontal clip lives here rather than on .chapter, because clipping on
+   the sticky element's ancestor would stop it sticking. */
+.chapter__frame {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: clip;
+  display: grid;
+  align-items: end;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0 var(--rail);
+  padding:
+    calc(var(--rail) + var(--safe-t))
+    calc(var(--gutter) + var(--safe-r))
+    clamp(3rem, 8vh, 6.5rem)
+    calc(var(--gutter) + var(--safe-l));
+  /* also guarantees the stacking context the scrim's negative z-index needs */
+  will-change: opacity;
+}
+
+.chapter[data-active='false'] .chapter__frame { pointer-events: none; }
+
+/* Composition moves across the journey: field, gate, room, tree, then the
+   circle, which centres because a circle has no side.
+
+   Seven columns, not six: the copy is capped by --measure well short of that,
+   but the player has to reach ~620-720px and it is aligned to this block. */
+.chapter[data-anchor='left']   .chapter__block { grid-column: 1 / span 7; }
+.chapter[data-anchor='right']  .chapter__block { grid-column: 6 / span 7; }
+.chapter[data-anchor='centre'] .chapter__block { grid-column: 3 / span 8; justify-self: center; text-align: center; }
+
+/* The block, not the frame, carries the counter-parallax — so the scrim stays
+   locked to the section and its edges never drift into view. */
+.chapter__block {
+  position: relative;
+  max-width: 44rem;
+  will-change: transform;
+}
+
+/* The scrim spans the whole frame rather than boxing the text. A box has
+   corners, and a corner over artwork reads as a panel; a gradient that runs
+   the full width of the screen has no edge to notice.
+
+   Every edge of it has to land on zero. Anything else shows up as a seam
+   halfway through a dissolve, when two sections are on screen at once. The
+   horizontal fade is in the gradient, the vertical fade is the mask. */
+.chapter__frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: var(--scrim);
+  /* Kept tight at the bottom: the words sit low, so a long fade there would
+     take the contrast out from under them. */
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%, #000 15%, #000 97.5%, transparent 100%);
+  mask-image: linear-gradient(to bottom,
+    transparent 0%, #000 15%, #000 97.5%, transparent 100%);
+}
+
+/* This one is atmosphere, not contrast: a broad cinematic falloff toward the
+   ground and toward whichever edge the copy sits on. Guaranteeing legibility
+   is the lede scrim's job, below. */
+/* There is no gradient across the foot of the frame any more. It was the band
+   showing under the player pill, and it is gone.
+
+   What is left runs in from one side only — the side the words are on — and
+   fades out well before the middle. Nothing is laid over the bottom of a
+   painting, so the ground, the brick and the feet of every figure are the
+   colour they were painted. The type carries a shadow instead (see
+   .chapter__lede below), which hugs the letterforms rather than darkening a
+   region of picture. */
+/* The band under the player was a short, steep ramp — steep enough that its
+   top edge read as a line across the picture. This is the same idea stretched
+   over more than twice the distance and started lower, so there is no edge
+   anywhere in it to see. The side gradient does the rest, and it leans toward
+   whichever edge the words are on so the opposite half of every painting is
+   left alone. */
+.chapter {
+  --scrim-v: linear-gradient(to top,
+    rgba(6, 4, 5, 0.6) 0%, rgba(6, 4, 5, 0.52) 10%,
+    rgba(6, 4, 5, 0.4) 22%, rgba(6, 4, 5, 0.28) 34%,
+    rgba(6, 4, 5, 0.17) 46%, rgba(6, 4, 5, 0.08) 58%,
+    rgba(6, 4, 5, 0.03) 70%, rgba(6, 4, 5, 0) 82%);
+}
+
+.chapter[data-anchor='left'] {
+  --scrim:
+    linear-gradient(to right,
+      rgba(6, 4, 5, 0.76) 0%, rgba(6, 4, 5, 0.66) 22%,
+      rgba(6, 4, 5, 0.5) 40%, rgba(6, 4, 5, 0.28) 58%,
+      rgba(6, 4, 5, 0.09) 72%, rgba(6, 4, 5, 0) 86%),
+    var(--scrim-v);
+}
+
+.chapter[data-anchor='right'] {
+  --scrim:
+    linear-gradient(to left,
+      rgba(6, 4, 5, 0.76) 0%, rgba(6, 4, 5, 0.66) 22%,
+      rgba(6, 4, 5, 0.5) 40%, rgba(6, 4, 5, 0.28) 58%,
+      rgba(6, 4, 5, 0.09) 72%, rgba(6, 4, 5, 0) 86%),
+    var(--scrim-v);
+}
+
+/* The circle has no side, so this one closes in from both edges. */
+.chapter[data-anchor='centre'] {
+  --scrim:
+    linear-gradient(to right,
+      rgba(6, 4, 5, 0) 0%, rgba(6, 4, 5, 0.34) 16%,
+      rgba(6, 4, 5, 0.46) 50%, rgba(6, 4, 5, 0.34) 84%, rgba(6, 4, 5, 0) 100%),
+    var(--scrim-v);
+}
+
+/* A shadow on the glyphs rather than a plate behind them. It hugs the
+   letterforms instead of darkening a rectangle of painting, which is what lets
+   the scrim above stay as light as it now is. */
+.chapter__lede {
+  text-shadow:
+    0 1px 2px rgba(6, 4, 5, 0.55),
+    0 2px 14px rgba(6, 4, 5, 0.45),
+    0 4px 40px rgba(6, 4, 5, 0.35);
+}
+
+/* The contrast scrim. Anchored to the type, so it goes where the type goes at
+   every viewport and behind every illustration — bright or dark. Its mask is
+   an ellipse that reaches exactly zero at the box edges, so like the frame
+   scrim it has no edge to notice. It grows with the detail block when that
+   opens, because that text needs holding too. */
+.chapter__lede {
+  position: relative;
+  /* The box has to track the type, not the column. Left-aligned text in a
+     full-width box put the scrim's centre out on the empty side. */
+  max-width: var(--measure);
+}
+
+.chapter[data-anchor='centre'] .chapter__lede { margin-inline: auto; }
+
+/* There is deliberately no separate panel behind the type. A localised scrim,
+   however softly masked, reads as a stain once the artwork behind it is bright
+   — and a masked rectangle leaves its corners bare, which is where the eyebrow
+   lives. The frame scrim above does the work instead: two full-width gradients
+   stacked compose as 1-(1-a)(1-b), which is a smooth two-dimensional falloff
+   with no edge anywhere in it, because each layer spans the whole frame. It is
+   tuned against the brightest painting in the set, not the darkest. */
+
+/* There was a darn field here — a phulkari float laid across the whole block
+   as the page's signature. It has been cut. However softly it was masked, a
+   striped wash over a painting reads as a smudge on the painting rather than
+   as cloth, and it was the first thing anyone noticed while scrolling.
+   The illustrations are the signature now; they do not need help.
+
+   The darning stitch survives where it is legible as stitching and does no
+   damage: the run under each section name (.chapter__rule) and the edge of a
+   boli (.boli). Small and deliberate, not a wash. */
+
+/* ------------------------------------------------------------- type lockup -- */
+
+.chapter__name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  font-weight: 400;
+}
+
+/* Gurmukhi sets the heading. Live text in a real Gurmukhi face, so the browser
+   shapes it — the sirlekh joins and the matras sit where they belong. Its
+   line-height needs more room than Latin: the bihari and the bindi run well
+   above the headline, and descenders below it. */
+.chapter__gurmukhi {
+  font-family: var(--font-gurmukhi);
+  font-weight: 500;
+  font-size: clamp(2.7rem, 6.6vw, 5.2rem);
+  line-height: 1.24;
+  color: var(--paper);
+  text-wrap: balance;
+}
+
+.chapter__sub {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(0.68rem, 0.85vw, 0.78rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+
+.chapter__roman { color: var(--accent-text, var(--accent)); }
+.chapter__dot { margin: 0 0.3rem; opacity: 0.5; }
+.chapter__english { color: var(--paper-faint); }
+
+/* A run of darning stitch, not a hairline rule. Steep enough and long
+   enough that each float reads as a stitch rather than a dash. */
+.chapter__rule {
+  width: 5.5rem;
+  height: 9px;
+  margin: 1.5rem 0 1.4rem;
+  background-image: repeating-linear-gradient(72deg,
+    var(--accent) 0 3px,
+    transparent 3px 9px);
+}
+
+.chapter[data-anchor='centre'] .chapter__rule { margin-inline: auto; }
+
+.chapter__copy {
+  max-width: var(--measure);
+  font-size: clamp(1.02rem, 1.35vw, 1.28rem);
+  line-height: 1.58;
+  color: var(--paper);
+  text-wrap: pretty;
+}
+
+.chapter[data-anchor='centre'] .chapter__copy { margin-inline: auto; }
+
+/* -------------------------------------------------------------- colophon -- */
+
+/* The end of the journey. The artwork dissolves into the ground colour and the
+   record signs off — which is also why the type here needs no scrim of its own. */
+.chapter__colophon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: start;
+  padding:
+    clamp(5rem, 14vh, 9rem)
+    calc(var(--gutter) + var(--safe-r))
+    calc(clamp(2.5rem, 6vh, 4rem) + var(--safe-b))
+    calc(var(--gutter) + var(--safe-l));
+  background: linear-gradient(to bottom,
+    rgba(6, 4, 5, 0) 0%,
+    rgba(6, 4, 5, 0.86) 38%,
+    #060405 72%);
+}
+
+.chapter__colophon-inner {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(244, 235, 219, 0.16);
+  font-size: 0.78rem;
+  line-height: 1.62;
+  color: rgba(244, 235, 219, 0.5);
+}
+
+.chapter__colophon-inner p + p { margin-top: 0.5rem; }
+
+/* ---------------------------------------------------------------- reveal -- */
+
+/* Once, on first entry, with a short stagger. Opacity and transform only.
+   The lede's children stagger individually; the player and the credits follow
+   as single units. */
+.chapter__lede > *,
+.chapter__block > .player,
+.chapter__colophon-inner {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 900ms var(--ease-slow),
+    transform 900ms var(--ease-slow);
+}
+
+.chapter.is-revealed .chapter__lede > *,
+.chapter.is-revealed .chapter__block > .player,
+.chapter.is-revealed .chapter__colophon-inner {
+  opacity: 1;
+  transform: none;
+}
+
+.chapter.is-revealed .chapter__lede > :nth-child(1) { transition-delay: 0ms; }
+.chapter.is-revealed .chapter__lede > :nth-child(2) { transition-delay: 90ms; }
+.chapter.is-revealed .chapter__lede > :nth-child(3) { transition-delay: 150ms; }
+.chapter.is-revealed .chapter__lede > :nth-child(4) { transition-delay: 220ms; }
+.chapter.is-revealed .chapter__lede > :nth-child(5) { transition-delay: 290ms; }
+.chapter.is-revealed .chapter__block > .player { transition-delay: 360ms; }
+.chapter.is-revealed .chapter__colophon-inner { transition-delay: 440ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter__lede > *,
+  .chapter__block > .player,
+  .chapter__colophon-inner {
+    transform: none;
+    transition: opacity 500ms linear;
+  }
+}

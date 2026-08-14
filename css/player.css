@@ -1,0 +1,312 @@
+/* ============================================================================
+   player — one per section, sitting in the composition rather than fixed
+
+   Glass is allowed here and on small controls. Nowhere else on the page.
+   ========================================================================= */
+
+.player {
+  position: relative;
+  width: min(100%, 44rem);   /* ~704px */
+  margin-top: 2rem;
+}
+
+.chapter[data-anchor='centre'] .player { margin-inline: auto; }
+
+/* The real YouTube iframe. It overlays the pill exactly — on screen, so
+   playback is never throttled as an off-screen frame, transparent and
+   click-through so the pill above is what anyone actually touches. */
+.player__mount {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  overflow: hidden;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.player__mount iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.player__pill {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 1rem;
+  min-height: 5.75rem;
+  padding: 0.85rem 1.5rem 0.85rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(148deg,
+      rgba(46, 30, 22, 0.58) 0%,
+      rgba(16, 10, 9, 0.74) 100%);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  backdrop-filter: blur(20px) saturate(1.25);
+  box-shadow:
+    0 22px 52px -20px rgba(0, 0, 0, 0.86),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11);
+}
+
+/* The player enters a beat after the copy it belongs to. That is the reveal
+   stagger in chapters.css doing the work — the pill has no entrance of its
+   own, so the two never fight over the same transform. */
+
+/* ------------------------------------------------------------------ thumb -- */
+
+.player__thumb {
+  position: relative;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(var(--accent-rgb), 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex: none;
+}
+
+.player__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* YouTube thumbnails are 16:9; crop to the middle of the frame */
+  object-position: center;
+}
+
+.player__thumb-mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(var(--accent-rgb), 0.85);
+}
+
+.player__thumb-mark svg { width: 1.6rem; height: 1.6rem; }
+
+.player[data-state='ready'] .player__thumb-mark[hidden] { display: none; }
+
+/* ------------------------------------------------------------------- body -- */
+
+.player__body {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+/* Title on the left, the YouTube Music link on the right of the same line.
+   The link keeps its place at every width — only its label drops away. */
+.player__meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.player__meta-text { min-width: 0; }
+
+.player__track-title {
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--paper);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player__sub {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  line-height: 1.35;
+  color: rgba(244, 235, 219, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player__sep { opacity: 0.5; margin: 0 0.4rem; }
+.player__section { color: var(--accent-text, var(--accent)); }
+
+/* ------------------------------------------------------------------ scrub -- */
+
+.player__scrub {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.player__time {
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: rgba(244, 235, 219, 0.45);
+  flex: none;
+  min-width: 2.1rem;
+}
+
+.player__time--dur { text-align: right; }
+
+.player__bar {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 3rem;
+  height: 24px;              /* hit area around a 2px track */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.player__bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(244, 235, 219, 0.18);
+}
+
+.player__bar-fill {
+  position: absolute;
+  left: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 2px;
+  background: var(--accent);
+  transform-origin: left center;
+}
+
+.player__bar-knob {
+  position: absolute;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 200ms var(--ease);
+}
+
+.player__bar:hover .player__bar-knob,
+.player__bar:focus-visible .player__bar-knob,
+.player__bar.is-scrubbing .player__bar-knob { opacity: 1; }
+
+.player__out {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  margin: -0.35rem 0 0;
+  padding: 0.45rem 0;        /* pointer target, without changing the look */
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: rgba(244, 235, 219, 0.48);
+  transition: color 200ms var(--ease);
+}
+
+.player__out:hover { color: var(--accent); }
+.player__out svg { width: 9px; height: 9px; stroke: currentColor; stroke-width: 1.7; fill: none; }
+
+/* -------------------------------------------------------------- transport -- */
+
+.player__transport {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  /* keeps the grid from compressing the track when the pill runs narrow */
+  min-width: max-content;
+}
+
+.player__btn {
+  display: grid;
+  place-items: center;
+  flex: none;          /* 44px is a floor, not a starting point */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--paper);
+  transition: background-color 200ms var(--ease), color 200ms var(--ease), opacity 200ms var(--ease);
+}
+
+.player__btn svg { width: 16px; height: 16px; fill: currentColor; }
+.player__btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.09); }
+
+.player__btn--play {
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.player__btn--play svg { width: 18px; height: 18px; }
+.player__btn--play:hover:not(:disabled) { background: rgba(var(--accent-rgb), 0.24); }
+
+.player__btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.player__icon--pause { display: none; }
+.player[data-playing='true'] .player__icon--play { display: none; }
+.player[data-playing='true'] .player__icon--pause { display: block; }
+
+/* ------------------------------------------------------- states & messages -- */
+
+.player__note {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgba(244, 235, 219, 0.56);
+}
+
+.player__note a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+/* disabled: no playlist ID yet. Honest, not broken, and no iframe is made.
+   error: the video is private, removed or blocked where the visitor is. */
+.player[data-state='disabled'] .player__meta,
+.player[data-state='disabled'] .player__scrub,
+.player[data-state='error'] .player__meta,
+.player[data-state='error'] .player__scrub { display: none; }
+
+.player[data-state='disabled'] .player__note,
+.player[data-state='error'] .player__note { display: flex; }
+
+.player[data-state='disabled'] .player__pill { opacity: 0.72; }
+
+/* loading: skeleton while the API reports metadata */
+.player[data-state='loading'] .player__track-title,
+.player[data-state='loading'] .player__sub {
+  color: transparent;
+  border-radius: 3px;
+  background: rgba(244, 235, 219, 0.16);
+  animation: player-skeleton 1.5s ease-in-out infinite;
+}
+
+.player[data-state='loading'] .player__track-title { max-width: 15rem; }
+.player[data-state='loading'] .player__sub { max-width: 9rem; }
+.player[data-state='loading'] .player__out { visibility: hidden; }
+
+@keyframes player-skeleton {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player[data-state='loading'] .player__track-title,
+  .player[data-state='loading'] .player__sub { animation: none; }
+}

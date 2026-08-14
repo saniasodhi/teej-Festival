@@ -1,0 +1,254 @@
+/* ============================================================================
+   atmosphere — the five stacked backgrounds, and the weather in them
+
+   Every background is fixed and full-bleed. Their opacities are driven by
+   scroll position so sections dissolve into one another instead of cutting.
+   Only transform and opacity are ever animated here.
+   ========================================================================= */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--ink-deep);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ scene -- */
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+}
+
+.scene[data-visible='true'] { will-change: opacity; }
+
+/* Skipped entirely when off-screen, which also stops its weather animating. */
+.scene[data-visible='false'] { visibility: hidden; }
+.scene[data-visible='false'] * { animation-play-state: paused; }
+
+.scene__art {
+  position: absolute;
+  /* slack on all sides so the parallax never exposes an edge */
+  inset: -10% -6%;
+  background-color: rgb(var(--c1-rgb));
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.scene[data-visible='true'] .scene__art { will-change: transform; }
+
+/* The illustration sits inside the parallax element, over the palette
+   gradient, under the canvas tooth.
+
+   A full-bleed image is always cropped by the viewport, and which part gets
+   cropped decides what ends up behind the copy. Each section sets its own
+   object-position; the two crops get their own, since a landscape frame and a
+   portrait one need different parts of the painting kept. */
+.scene__art picture,
+.scene__art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--art-pos, 50% 50%);
+}
+
+@media (orientation: portrait) {
+  .scene__art img { object-position: var(--art-pos-tall, 50% 50%); }
+}
+
+/* The placeholder that stands in until an illustration is dropped in
+   assets/art/. Built from the section's own four palette colours, so the
+   layout and the colour journey are both testable without the art. */
+.scene__art--placeholder {
+  background-image:
+    /* a defined light source, not an even wash */
+    radial-gradient(40% 32% at var(--ax) var(--ay),
+      rgba(var(--c4-rgb), 0.68), rgba(var(--c4-rgb), 0) 74%),
+    radial-gradient(64% 50% at var(--bx) 86%,
+      rgba(var(--c3-rgb), 0.8), rgba(var(--c3-rgb), 0) 76%),
+    /* weight into the ground, so the frame has a real value range and the
+       scrim above it has little left to step down from */
+    linear-gradient(to top,
+      rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.24) 26%, rgba(0, 0, 0, 0) 52%),
+    radial-gradient(130% 96% at 50% 116%,
+      rgba(var(--c2-rgb), 0.92), rgba(var(--c2-rgb), 0) 72%),
+    linear-gradient(172deg,
+      rgba(var(--c2-rgb), 0.9) 0%, rgba(var(--c1-rgb), 1) 58%);
+}
+
+/* Painterly break-up, so the placeholder reads as ground rather than as a
+   CSS gradient. Also sits over real artwork at low strength as canvas tooth. */
+.scene__art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(102deg,
+      rgba(255, 255, 255, 0.022) 0 2px,
+      rgba(0, 0, 0, 0.028) 2px 5px),
+    repeating-linear-gradient(6deg,
+      rgba(255, 255, 255, 0.015) 0 3px,
+      rgba(0, 0, 0, 0.02) 3px 7px);
+}
+
+/* Pulls a palette gradient into shape. Over a real illustration it is turned
+   right down — the painting brought its own colour, and washing it again just
+   greys out what the painter chose. */
+.scene__wash {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  background: linear-gradient(154deg,
+    rgba(var(--c4-rgb), 0.5) 0%,
+    rgba(var(--c3-rgb), 0.2) 45%,
+    rgba(var(--c1-rgb), 0.85) 100%);
+}
+
+.scene--art .scene__wash { opacity: 0.14; }
+
+.scene__fx {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Failed artwork load: keep the placeholder, say so quietly in the corner. */
+.scene__art-error {
+  position: absolute;
+  right: var(--rail);
+  bottom: calc(var(--rail) + var(--safe-b));
+  z-index: 3;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(244, 235, 219, 0.42);
+}
+
+/* ------------------------------------------------------- colour temperature -- */
+
+/* Two blend layers. Only their opacity changes, interpolated across the
+   journey, which is what makes Sawan read cold and Giddha read hot. */
+.backdrop__tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.backdrop__tint--cool { z-index: 2; background: #2F7280; }
+.backdrop__tint--warm { z-index: 3; background: #FF8622; }
+
+/* ------------------------------------------------------------------ grain -- */
+
+.backdrop__grain {
+  position: absolute;
+  inset: -60px;
+  z-index: 4;
+  opacity: 0.32;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='170' height='170' filter='url(%23n)' opacity='0.5'/></svg>");
+  animation: grain-drift 6s steps(1) infinite;
+}
+
+@keyframes grain-drift {
+  0%   { transform: translate3d(0, 0, 0); }
+  12%  { transform: translate3d(-9px, 5px, 0); }
+  25%  { transform: translate3d(7px, -11px, 0); }
+  37%  { transform: translate3d(-13px, -4px, 0); }
+  50%  { transform: translate3d(11px, 8px, 0); }
+  62%  { transform: translate3d(-5px, 12px, 0); }
+  75%  { transform: translate3d(13px, -6px, 0); }
+  87%  { transform: translate3d(-8px, -10px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.backdrop__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background:
+    radial-gradient(140% 104% at 50% 46%,
+      rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.09) 84%, rgba(0, 0, 0, 0.24) 100%);
+}
+
+/* ------------------------------------------------------- rain — Sawan only -- */
+
+.rain__drop {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 13vh;
+  background: linear-gradient(to bottom,
+    rgba(var(--c4-rgb), 0), rgba(var(--c4-rgb), 0.55));
+  animation-name: rain-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rain-fall {
+  from { transform: translate3d(0, -22vh, 0) rotate(5deg); }
+  to   { transform: translate3d(7vh, 112vh, 0) rotate(5deg); }
+}
+
+/* ------------------------------------------ lamp flicker — Mehendi te Phulkari -- */
+
+.lamp {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(42% 34% at 62% 26%,
+    rgba(var(--c4-rgb), 0.55) 0%, rgba(var(--c4-rgb), 0) 72%);
+  animation: lamp-flicker 7.3s ease-in-out infinite;
+}
+
+/* Uneven on purpose. A bulb on a village line does not pulse in time. */
+@keyframes lamp-flicker {
+  0%, 100% { opacity: 0.62; }
+  9%   { opacity: 0.78; }
+  14%  { opacity: 0.52; }
+  27%  { opacity: 0.71; }
+  33%  { opacity: 0.58; }
+  48%  { opacity: 0.8; }
+  55%  { opacity: 0.5; }
+  71%  { opacity: 0.74; }
+  84%  { opacity: 0.6; }
+}
+
+/* --------------------------------------------------- dust motes — Giddha -- */
+
+.mote {
+  position: absolute;
+  border-radius: 50%;
+  background: rgb(var(--c4-rgb));
+  opacity: 0;
+  animation-name: mote-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes mote-drift {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  14%  { opacity: var(--o); }
+  86%  { opacity: var(--o); }
+  100% { transform: translate3d(var(--dx), var(--dy), 0); opacity: 0; }
+}
+
+/* ------------------------------------------------------- reduced motion -- */
+
+/* Drift, rain, flicker and parallax all go. The crossfades stay — they are
+   what makes the journey legible, and they are opacity only. */
+@media (prefers-reduced-motion: reduce) {
+  .backdrop__grain { animation: none; }
+  .rain__drop { display: none; }
+  .mote { display: none; }
+  .lamp { animation: none; opacity: 0.64; }
+}

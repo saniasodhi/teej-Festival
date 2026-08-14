@@ -1,0 +1,133 @@
+/* ============================================================================
+   detail — the quiet trigger and the block it opens
+
+   Height is animated with the 0fr/1fr grid technique, so nothing is measured
+   in JavaScript and nothing jumps. Visibility is delayed to the end of the
+   collapse, which keeps collapsed content out of the tab order and out of the
+   accessibility tree without an extra attribute to keep in sync.
+   ========================================================================= */
+
+.chapter__disclosure { margin-top: 1.5rem; }
+
+.chapter[data-anchor='centre'] .chapter__disclosure {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+.chapter__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* 44px touch target without a 44px-looking control */
+  min-height: 44px;
+  padding: 0 0.25rem;
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--paper-dim);
+  transition: color 220ms var(--ease);
+}
+
+.chapter__more:hover { color: var(--paper); }
+
+.chapter__more-label {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(244, 235, 219, 0.42);
+  transition: text-decoration-color 220ms var(--ease);
+}
+
+.chapter__more:hover .chapter__more-label { text-decoration-color: var(--accent); }
+
+.chapter__more-chev {
+  width: 10px;
+  height: 10px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  fill: none;
+  transition: transform 380ms var(--ease);
+}
+
+.chapter__more[aria-expanded='true'] .chapter__more-chev { transform: rotate(180deg); }
+
+/* ------------------------------------------------------------------ block -- */
+
+.chapter__detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 460ms var(--ease);
+}
+
+.chapter__more[aria-expanded='true'] + .chapter__detail { grid-template-rows: 1fr; }
+
+.chapter__detail-inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 240ms linear,
+    visibility 0s linear 460ms;
+}
+
+.chapter__more[aria-expanded='true'] + .chapter__detail .chapter__detail-inner {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 380ms var(--ease) 120ms,
+    visibility 0s linear 0s;
+}
+
+.chapter__detail-body {
+  max-width: var(--measure);
+  padding: 1.15rem 0 0.25rem;
+  font-size: 0.95rem;
+  line-height: 1.72;
+  color: var(--paper-dim);
+  text-wrap: pretty;
+}
+
+.chapter[data-anchor='centre'] .chapter__detail-body { text-align: left; }
+
+.chapter__detail-body p + p { margin-top: 0.95rem; }
+
+/* ------------------------------------------------------------------- boli -- */
+
+.boli {
+  margin-top: 1.5rem;
+  padding-left: 1.15rem;
+  border-left: 3px solid transparent;
+  /* the same darning run as the section rule, turned upright */
+  border-image: repeating-linear-gradient(180deg,
+    var(--accent) 0 6px, transparent 6px 10px) 3;
+}
+
+.boli__pa {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.12rem;
+  line-height: 1.5;
+  color: var(--paper);
+}
+
+.boli__en {
+  margin-top: 0.5rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--paper-dim);
+}
+
+.boli__note {
+  margin-top: 0.8rem;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  letter-spacing: 0.015em;
+  color: rgba(244, 235, 219, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter__detail { transition: grid-template-rows 240ms linear; }
+  .chapter__more-chev { transition: none; }
+}
