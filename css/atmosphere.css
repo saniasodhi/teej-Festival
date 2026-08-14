@@ -176,9 +176,8 @@
   position: absolute;
   inset: 0;
   z-index: 5;
-  background:
-    radial-gradient(140% 104% at 50% 46%,
-      rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.09) 84%, rgba(0, 0, 0, 0.24) 100%);
+  /* Also gone. Nothing darkens the paintings now, corners included. */
+  background: none;
 }
 
 /* ------------------------------------------------------- rain — Sawan only -- */

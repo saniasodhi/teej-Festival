@@ -76,102 +76,38 @@
   will-change: transform;
 }
 
-/* The scrim spans the whole frame rather than boxing the text. A box has
-   corners, and a corner over artwork reads as a panel; a gradient that runs
-   the full width of the screen has no edge to notice.
+/* There is no scrim. Nothing is laid over the paintings at all — no band, no
+   wash, no panel behind the type. The five illustrations are shown as painted.
 
-   Every edge of it has to land on zero. Anything else shows up as a seam
-   halfway through a dissolve, when two sections are on screen at once. The
-   horizontal fade is in the gradient, the vertical fade is the mask. */
-.chapter__frame::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background: var(--scrim);
-  /* Kept tight at the bottom: the words sit low, so a long fade there would
-     take the contrast out from under them. */
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0%, #000 15%, #000 97.5%, transparent 100%);
-  mask-image: linear-gradient(to bottom,
-    transparent 0%, #000 15%, #000 97.5%, transparent 100%);
-}
+   Legibility is carried entirely by the glyphs: a dark stroke drawn behind the
+   fill (paint-order) plus a layered shadow, so the darkening follows the
+   letterforms and covers roughly the area of the letters themselves rather
+   than a region of picture. See .chapter__lede below. */
 
-/* This one is atmosphere, not contrast: a broad cinematic falloff toward the
-   ground and toward whichever edge the copy sits on. Guaranteeing legibility
-   is the lede scrim's job, below. */
-/* There is no gradient across the foot of the frame any more. It was the band
-   showing under the player pill, and it is gone.
 
-   What is left runs in from one side only — the side the words are on — and
-   fades out well before the middle. Nothing is laid over the bottom of a
-   painting, so the ground, the brick and the feet of every figure are the
-   colour they were painted. The type carries a shadow instead (see
-   .chapter__lede below), which hugs the letterforms rather than darkening a
-   region of picture. */
-/* The band under the player was a short, steep ramp — steep enough that its
-   top edge read as a line across the picture. This is the same idea stretched
-   over more than twice the distance and started lower, so there is no edge
-   anywhere in it to see. The side gradient does the rest, and it leans toward
-   whichever edge the words are on so the opposite half of every painting is
-   left alone. */
-.chapter {
-  --scrim-v: linear-gradient(to top,
-    rgba(6, 4, 5, 0.6) 0%, rgba(6, 4, 5, 0.52) 10%,
-    rgba(6, 4, 5, 0.4) 22%, rgba(6, 4, 5, 0.28) 34%,
-    rgba(6, 4, 5, 0.17) 46%, rgba(6, 4, 5, 0.08) 58%,
-    rgba(6, 4, 5, 0.03) 70%, rgba(6, 4, 5, 0) 82%);
-}
+/* All of the contrast, and none of it laid over the picture.
 
-.chapter[data-anchor='left'] {
-  --scrim:
-    linear-gradient(to right,
-      rgba(6, 4, 5, 0.76) 0%, rgba(6, 4, 5, 0.66) 22%,
-      rgba(6, 4, 5, 0.5) 40%, rgba(6, 4, 5, 0.28) 58%,
-      rgba(6, 4, 5, 0.09) 72%, rgba(6, 4, 5, 0) 86%),
-    var(--scrim-v);
-}
-
-.chapter[data-anchor='right'] {
-  --scrim:
-    linear-gradient(to left,
-      rgba(6, 4, 5, 0.76) 0%, rgba(6, 4, 5, 0.66) 22%,
-      rgba(6, 4, 5, 0.5) 40%, rgba(6, 4, 5, 0.28) 58%,
-      rgba(6, 4, 5, 0.09) 72%, rgba(6, 4, 5, 0) 86%),
-    var(--scrim-v);
-}
-
-/* The circle has no side, so this one closes in from both edges. */
-.chapter[data-anchor='centre'] {
-  --scrim:
-    linear-gradient(to right,
-      rgba(6, 4, 5, 0) 0%, rgba(6, 4, 5, 0.34) 16%,
-      rgba(6, 4, 5, 0.46) 50%, rgba(6, 4, 5, 0.34) 84%, rgba(6, 4, 5, 0) 100%),
-    var(--scrim-v);
-}
-
-/* A shadow on the glyphs rather than a plate behind them. It hugs the
-   letterforms instead of darkening a rectangle of painting, which is what lets
-   the scrim above stay as light as it now is. */
-.chapter__lede {
-  text-shadow:
-    0 1px 2px rgba(6, 4, 5, 0.55),
-    0 2px 14px rgba(6, 4, 5, 0.45),
-    0 4px 40px rgba(6, 4, 5, 0.35);
-}
-
-/* The contrast scrim. Anchored to the type, so it goes where the type goes at
-   every viewport and behind every illustration — bright or dark. Its mask is
-   an ellipse that reaches exactly zero at the box edges, so like the frame
-   scrim it has no edge to notice. It grows with the detail block when that
-   opens, because that text needs holding too. */
+   `paint-order: stroke fill` draws a dark stroke *behind* the fill, so the
+   letters keep their exact shape and gain a hard dark edge against whatever
+   is behind them. The layered shadow then softens outward from that edge.
+   Together they darken about as much area as the letters occupy — which is
+   the whole point, versus a gradient that darkens a third of the frame. */
 .chapter__lede {
   position: relative;
-  /* The box has to track the type, not the column. Left-aligned text in a
-     full-width box put the scrim's centre out on the empty side. */
   max-width: var(--measure);
+  paint-order: stroke fill;
+  text-shadow:
+    0 0 3px rgba(6, 4, 5, 0.92),
+    0 1px 4px rgba(6, 4, 5, 0.86),
+    0 2px 12px rgba(6, 4, 5, 0.72),
+    0 4px 28px rgba(6, 4, 5, 0.6);
 }
+
+/* Stroke weight has to scale with the type or it closes up the counters on
+   the small sizes and looks thin on the big one. */
+.chapter__gurmukhi { -webkit-text-stroke: 6px rgba(6, 4, 5, 0.72); }
+.chapter__sub { -webkit-text-stroke: 3px rgba(6, 4, 5, 0.78); }
+.chapter__copy { -webkit-text-stroke: 3.5px rgba(6, 4, 5, 0.76); }
 
 .chapter[data-anchor='centre'] .chapter__lede { margin-inline: auto; }
 

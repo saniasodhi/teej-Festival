@@ -74,50 +74,14 @@
 
   .chapter[data-anchor='centre'] .player { margin-inline: 0; }
 
-  /* One clear zone in a vertical frame, so the scrim is purely bottom-weighted
-     whatever the section's desktop anchor was.
+  /* No scrim here either. The stroke and shadow on the glyphs carry it, and a
+     phone showing a tall painting needs the painting more than most. */
 
-     Measured in pixels from the bottom, not in percentages. The block is about
-     the same height on every phone; the viewport is not. On a 667px-tall
-     screen a percentage scrim leaves the eyebrow sitting above its strong zone
-     and on bare sky — which is exactly what it did before this was changed. */
-  .chapter[data-anchor='left'],
-  .chapter[data-anchor='right'],
-  .chapter[data-anchor='centre'] {
-    --scrim: linear-gradient(to top,
-      rgba(6, 4, 5, 0.93) 0,
-      rgba(6, 4, 5, 0.9) 240px,
-      rgba(6, 4, 5, 0.78) 380px,
-      rgba(6, 4, 5, 0.55) 480px,
-      rgba(6, 4, 5, 0.22) 580px,
-      rgba(6, 4, 5, 0) 690px);
-  }
-
-  /* The vertical scrim already ends on zero at the top, so the mask only has
-     to protect the bottom edge. */
-  .chapter__frame::before {
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
-  }
-
-  .chapter__lede::before { inset: -2.25rem -1.6rem -1.75rem -1.6rem; }
-
-  /* A short phone stacks the same lockup into less height, so the eyebrow ends
-     up further from the bottom and out of the scrim's reach. Measured: on a
-     375x667 frame it lands on the bright sky above the gurdwara. */
-  @media (max-height: 720px) {
-    .chapter[data-anchor='left'],
-    .chapter[data-anchor='right'],
-    .chapter[data-anchor='centre'] {
-      --scrim: linear-gradient(to top,
-        rgba(6, 4, 5, 0.94) 0,
-        rgba(6, 4, 5, 0.92) 260px,
-        rgba(6, 4, 5, 0.82) 400px,
-        rgba(6, 4, 5, 0.62) 490px,
-        rgba(6, 4, 5, 0.26) 590px,
-        rgba(6, 4, 5, 0) 700px);
-    }
-  }
+  /* The stroke is a little heavier on small type, where the glyphs are thin
+     and the artwork behind them is only ever a swipe away from changing. */
+  .chapter__gurmukhi { -webkit-text-stroke-width: 5px; }
+  .chapter__sub { -webkit-text-stroke-width: 3px; }
+  .chapter__copy { -webkit-text-stroke-width: 3.5px; }
 
   .chapter__gurmukhi { font-size: clamp(2.2rem, 9.8vw, 3.1rem); }
   .chapter__copy { font-size: 1rem; line-height: 1.55; }
@@ -216,26 +180,6 @@
    one thing that cannot give. */
 @media (max-height: 560px) and (orientation: landscape) and (max-width: 1024px) {
   :root { --measure: min(100%, 44rem); }
-
-  /* The block goes full width here, so a side-weighted scrim would leave the
-     end of every line sitting on bare artwork. Bottom-weighted instead, in
-     pixels, sized to the ~300px the lockup occupies. */
-  .chapter[data-anchor='left'],
-  .chapter[data-anchor='right'],
-  .chapter[data-anchor='centre'] {
-    --scrim: linear-gradient(to top,
-      rgba(6, 4, 5, 0.94) 0,
-      rgba(6, 4, 5, 0.9) 150px,
-      rgba(6, 4, 5, 0.8) 230px,
-      rgba(6, 4, 5, 0.62) 300px,
-      rgba(6, 4, 5, 0.3) 350px,
-      rgba(6, 4, 5, 0) 410px);
-  }
-
-  .chapter__frame::before {
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 96%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 96%, transparent 100%);
-  }
 
   .chapter[data-anchor='left']   .chapter__block,
   .chapter[data-anchor='right']  .chapter__block,
